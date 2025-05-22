@@ -31,8 +31,9 @@ export default function App() {
       const data = await fetchMovies(query);
       setMovies(data);
       if (data.length === 0) notify();
-    } catch {
+    } catch (error) {
       setIsError(true);
+      toast.error(`${error}`);
     } finally {
       setIsLoading(false);
     }
