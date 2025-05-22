@@ -7,13 +7,16 @@ import type { Movie } from "../../types/movie";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [movie, setMovie] = useState<Movie>({} as Movie);
+  const [movie, setMovie] = useState<Movie | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const notify = () => toast("No movies found for your request.");
 
   const openModal = (selectedMovie: Movie) => {
     setIsModalOpen(true);
@@ -21,19 +24,15 @@ export default function App() {
   };
   const closeModal = () => setIsModalOpen(false);
 
-  function resetGrid() {
-    setMovies([]);
-  }
-
   const handleSubmit = async (query: string) => {
     try {
       setIsLoading(true);
       setIsError(false);
       const data = await fetchMovies(query);
       setMovies(data);
+      if (data.length === 0) notify();
     } catch {
       setIsError(true);
-      resetGrid();
     } finally {
       setIsLoading(false);
     }
@@ -41,15 +40,12 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <SearchBar onSubmit={handleSubmit} resetGrid={resetGrid}></SearchBar>
+      <Toaster />
+      <SearchBar onSubmit={handleSubmit}></SearchBar>
       {isLoading && <Loader />}
-      {movies.length > 0 ? (
-        <MovieGrid movies={movies} onSelect={openModal} />
-      ) : (
-        <p>No movies found for your request.</p>
-      )}
+      {movies.length > 0 && <MovieGrid movies={movies} onSelect={openModal} />}
       {isError && <ErrorMessage />}
-      {isModalOpen && <MovieModal movie={movie} onClose={closeModal} />}
+      {isModalOpen && <MovieModal movie={movie!} onClose={closeModal} />}
     </div>
   );
 }

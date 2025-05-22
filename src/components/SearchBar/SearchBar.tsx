@@ -3,17 +3,15 @@ import toast, { Toaster } from "react-hot-toast";
 
 interface SearchBarProps {
   onSubmit: (value: string) => void;
-  resetGrid: () => void;
 }
 
-export default function SearchBar({ onSubmit, resetGrid }: SearchBarProps) {
+export default function SearchBar({ onSubmit }: SearchBarProps) {
   const notify = () => toast.error("Please enter your search query.");
 
   const handleSubmit = (formData: FormData) => {
     const query = formData.get("query") as string;
     if (query.trim() === "") {
       notify();
-      resetGrid();
       return;
     }
     onSubmit(query);
