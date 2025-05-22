@@ -14,15 +14,15 @@ export default function App() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const notify = () => toast("No movies found for your request.");
 
   const openModal = (selectedMovie: Movie) => {
-    setIsModalOpen(true);
     setMovie(selectedMovie);
   };
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setMovie(null);
+  };
 
   const handleSubmit = async (query: string) => {
     try {
@@ -45,7 +45,7 @@ export default function App() {
       {isLoading && <Loader />}
       {movies.length > 0 && <MovieGrid movies={movies} onSelect={openModal} />}
       {isError && <ErrorMessage />}
-      {isModalOpen && <MovieModal movie={movie!} onClose={closeModal} />}
+      {movie && <MovieModal movie={movie!} onClose={closeModal} />}
     </div>
   );
 }
